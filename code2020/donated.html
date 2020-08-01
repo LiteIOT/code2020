@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/index.css">
+
+  <style>
+    .time {
+      font-size: 13px;
+      color: #999;
+    }
+
+    .bottom p {
+      font-size: 13px;
+      color: #999;
+    }
+
+    .bottom {
+      margin-top: 13px;
+      line-height: 12px;
+    }
+
+    .button {
+      padding: 0;
+      float: right;
+    }
+
+    .image {
+      width: 100%;
+      display: block;
+    }
+
+    .clearfix:before,
+    .clearfix:after {
+      display: table;
+      content: "";
+    }
+
+    .clearfix:after {
+      clear: both
+    }
+  </style>
+
+</head>
+
+<body>
+  <div id="app">
+
+
+    <p><img src="images/banner.jpg"></p>
+
+    <el-row :span="8" v-for="(todo, index) in dataList">
+      <el-col :span="8">
+        <el-card :body-style="{ padding: '0px' }">
+          <div style="padding: 14px;">
+            <span>{{todo.don_material}}</span>
+            <el-button type="text" class="button">数量: {{todo.don_quantity}}</el-button>
+            <div class="bottom clearfix">
+              <!--el-button type="text" class="button">详情</el-button-->
+              <p>捐赠方：{{todo.don_donor}}</p>
+
+              <time class="time">{{ todo.don_datetime }}</time>
+
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+
+    <a href="donation.html">
+      <el-button type="primary" icon="el-icon-first-aid-kit">我要捐赠</el-button>
+    </a>
+  </div>
+</body>
+<!-- import Vue before Element -->
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- import JavaScript -->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script src="dist/axios.min.js"></script>
+<script>
+  var api_url = "api.admin.don.php";
+  new Vue({
+    el: '#app',
+    data: function () {
+      return {
+        visible: false,
+        dataList:[],
+        currentDate: new Date()
+      }
+    },
+
+    methods: {
+
+      addPost: function () {
+        var that = this;
+
+        axios.get(api_url, {
+          params: {
+            action: 'addPost',
+            material: that.material,
+            quantity: that.quantity,
+            donor: that.donor,
+            contact: that.contact,
+            telephone: that.telephone,
+            address: that.address
+          }
+        })
+          .then(function (response) {
+            //JSON.parse(response.data);
+            console.log(response.data);
+            console.log(response.data['code']);
+            console.log(response.data);
+            console.log(response.data['code']);
+            if (response.data['code'] == 1) {
+              that.getList()
+              that.refreshForm()
+              //window.location.href = './index.html';
+            }
+
+
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+
+      },
+
+
+
+
+      getList: function () {
+        var that = this;
+        axios.get(api_url, {
+          params: {
+            action: 'listPost',
+            //post_id: this.post_id
+          }
+        })
+          .then(function (response) {
+            if (response.status == 200) {
+              //post_list = response.data[0]
+              // console.log(post_list)
+              that.dataList = response.data;
+              console.log(that.dataList)
+            }
+
+
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+
+      },
+
+
+
+
+    },
+    created: function () {
+      var that = this;
+      that.getList()
+    },
+
+  })
+
+
+
+</script>
+
+
+
+
+</html>
